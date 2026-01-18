@@ -8,6 +8,7 @@ export interface ExecutionContext {
   signal?: AbortSignal;
   retryCount?: number;
   stepIndex?: number;
+  stepName?: string;
 }
 
 export interface FlowOptions {
@@ -21,6 +22,7 @@ export interface RunManyOptions extends FlowOptions {
 export interface Flow<T = any> {
   step<R>(fn: AsyncFn<T, R>): Flow<R>;
   parallel<R>(fns: AsyncFn<T, any>[]): Flow<R[]>;
+  name(label: string): Flow<T>;
   retry(count: number, delayMs?: number): Flow<T>;
   timeout(ms: number): Flow<T>;
   stepTimeout(ms: number): Flow<T>;

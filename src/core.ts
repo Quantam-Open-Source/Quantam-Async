@@ -12,6 +12,7 @@ interface Step {
   retries?: number;
   retryDelay?: number;
   timeout?: number;
+  name?: string;
 }
 
 export class Quantam<T = any> implements Flow<T> {
@@ -34,6 +35,20 @@ export class Quantam<T = any> implements Flow<T> {
     newFlow.timeoutMs = this.timeoutMs;
     newFlow.abortSignal = this.abortSignal;
     newFlow.steps.push({ type: 'parallel', fns });
+    return newFlow;
+  }
+
+  name(label: string): Quantam<T> {
+    const newFlow = new Quantam<T>();
+    newFlow.steps = [...this.steps];
+    newFlow.timeoutMs = this.timeoutMs;
+    newFlow.abortSignal = this.abortSignal;
+
+    if (newFlow.steps.length > 0) {
+      const lastStep = newFlow.steps[newFlow.steps.length - 1];
+      lastStep.name = label;
+    }
+
     return newFlow;
   }
 
@@ -129,6 +144,7 @@ export class Quantam<T = any> implements Flow<T> {
 
       const step = this.steps[i];
       context.stepIndex = i;
+      context.stepName = step.name;
       context.retryCount = 0;
 
       if (step.type === 'single' && step.fn) {
@@ -190,7 +206,16 @@ export class Quantam<T = any> implements Flow<T> {
       }
     }
 
-    throw lastError || new Error('Step execution failed');
+    if (lastError) {
+      const stepLabel = context.stepName ? ` '${context.stepName}'` : '';
+      if (stepLabel && !lastError.message.includes(stepLabel)) {
+        lastError.message = `${lastError.message} (at step${stepLabel})`;
+      }
+      throw lastError;
+    }
+    
+    const stepLabel = context.stepName ? ` '${context.stepName}'` : '';
+    throw new Error(`Step${stepLabel} execution failed`);
   }
 
   private async executeParallelSteps(

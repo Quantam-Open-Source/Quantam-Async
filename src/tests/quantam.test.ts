@@ -72,3 +72,33 @@ test('runMany respects concurrency limit', async () => {
   assert.ok(maxInFlight <= concurrencyLimit);
 });
 
+test('step names appear in error messages', async () => {
+  const flow = quantam<number>().step(async (n: number) => {
+    if (true) throw new Error('validation failed');
+    return n;
+  }).name('validateInput');
+
+  let threw = false;
+  let errorMessage = '';
+  try {
+    await flow.run(1);
+  } catch (err) {
+    threw = true;
+    errorMessage = (err as Error).message;
+  }
+  assert.equal(threw, true);
+  assert.match(errorMessage, /validateInput/);
+});
+
+test('step name passed in context', async () => {
+  let capturedName = '';
+
+  const flow = quantam<number>().step(async (n, ctx) => {
+    capturedName = ctx?.stepName ?? '';
+    return n + 1;
+  }).name('processData');
+
+  await flow.run(1);
+  assert.equal(capturedName, 'processData');
+});
+

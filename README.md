@@ -44,13 +44,13 @@ const result = await quantam()
 ## Install
 
 ```bash
-npm install quantam
+npm install quantam-async
 ```
 
 ## Quick Start
 
 ```typescript
-import { quantam } from 'quantam';
+import { quantam } from 'quantam-async';
 
 // Define your async functions
 async function fetchUser(id: string) {
@@ -131,6 +131,21 @@ flow
   .stepTimeout(200); // only this step is limited to 200ms
 ```
 
+### `.name(label)`
+
+Assign a name to the most recent step for better error messages and debugging.
+
+```typescript
+flow
+  .step(validateInput)
+  .name('validateInput')
+  .step(processData)
+  .name('processData');
+
+// If validateInput fails, error will include "(at step 'validateInput')"
+// The step name is also available in the context: context.stepName
+```
+
 ### `.withSignal(signal)`
 
 Bind an AbortSignal to the flow for reuse.
@@ -191,6 +206,7 @@ controller.abort();
 
 ## Version
 
+**v0.1.1** — Added step naming for better error messages and debugging.
 **v0.1.0** — Core features only. API subject to change.
 
 ## License
