@@ -1,0 +1,29 @@
+{
+  "name": "quantam",
+  "version": "0.1.0",
+  "description": "A lightweight async workflow engine for composing, running, and controlling complex task pipelines with retries, parallelism, timeouts, and cancellation.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test dist/tests/*.test.js",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "async",
+    "pipeline",
+    "workflow",
+    "retry",
+    "timeout",
+    "cancellation",
+    "parallel",
+    "orchestration"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
